@@ -1,0 +1,7 @@
+# compiled output
+
+# dependencies
+node_modules
+
+# env
+.env
