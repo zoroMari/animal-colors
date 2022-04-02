@@ -1,1 +1,2 @@
-// import './app/gallery';
+import './index.sass';
+import './app/createBreedTabs'

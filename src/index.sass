@@ -1,52 +1,173 @@
-$color: red
+$color-main: #60BBFD
+$color-black: #333333
+$color-grey_light: #FDFDFD
+$color-grey_border: #F1F1F1
+$color-white: #fff
+
+$font-family: 'Montserrat', sans-serif
+
+$font-h1: 40px/48px $font-family
+$font-h2: 24px/29px $font-family
+$font-body_regular: 16px/20px $font-family
+
+$font-logo: 24px/29px $font-family
+$font-lable: 12px/15px $font-family
+$font-button: 16px/20px $font-family
+$font-tabs: 24px/29px $font-family
+
+
+html, body
+  margin: 0
+  padding: 0
+  width: 100%
+  height: 100%
+
+
+body
+  overflow-x: hidden
+  background-color: $color-grey_light
+
+
+body *
+  box-sizing: border-box
+
 
 a
   color: inherit
   text-decoration: none
 
-div
-  color: black
-  line-height: 150%
-  margin: 15px 0px
-  padding-bottom: 5px
-  text-align: center
 
-strong
-  color: green
+ul, li, button
+  list-style: none
 
-.alert
-  margin: 15px 0px
-  padding: 15px
-  border: 1px solid #d6e9c6
-  border-radius: 4px
-  color: #3c763d
-  background-color: #dff0d8
-  text-align: center
-
-  // &-red
-  //   color: red
-
-.button
-  display: flex
-  justify-content: center
 
 button
-  color: green
-  text-transform: uppercase
+  border: none
+  background-color: transparent
+  cursor: pointer
+  padding: 0
 
 
-.fly
-  margin: 15px 0px
-  padding: 15px
-  border: 1px solid #d6e9c6
-  border-radius: 4px
-  color: #10529c
-  background-color: #c9dffd
-  text-align: center
-  text-transform: uppercase
+img
+  box-sizing: border-box
 
-.halloween
-  display: none
 
-.halloween.open
-  display: block
+a, h1, h2, h3, h4, h5, h6, p
+  margin: 0
+  padding: 0
+  border: none
+
+
+.Header
+  height: 80px
+  background-color: $color-main
+  display: flex
+  justify-content: space-between
+  align-items: center
+  color: $color-white
+  padding: 16px 40px
+
+  .Logo
+    display: flex
+    align-items: center
+    font: $font-logo
+    font-weight: 700
+
+    img
+      margin-right: 16px
+
+  & > p
+    font: $font-body_regular
+    font-weight: 700
+
+
+.Main
+  max-width: 1600px
+  margin: 0px auto
+  display: flex
+  flex-direction: column
+  align-items: center
+
+  h1
+    font: $font-h1
+    color: $color-black
+    margin: 40px 24px 32px 24px
+    text-align: center
+
+
+.Breeds
+  display: flex
+  flex-wrap: wrap
+  align-items: center
+
+  .Breed
+    font: $font-button
+    color: $color-black
+    background-color: $color-white
+    border: $color-grey_border solid 2px
+    border-radius: 25px
+    padding: 12px 24px
+    cursor: pointer
+
+    &:not(:last-child)
+      margin-right: 16px
+
+    &_active
+      border-color: $color-main;
+
+
+.Gallery
+  position: relative
+  display: flex
+  flex-direction: column
+  align-items: center
+  margin-top: 32px
+  width: 640px
+
+  .MainPhoto
+    width: 100%
+    height: auto
+    max-width: 100%
+
+    img
+      border-radius: 16px
+
+
+  .Previews
+    display: flex
+    flex-wrap: wrap
+    max-width: 100%
+    margin-top: 32px
+
+    .Preview
+      width: 92px
+      height: 92px
+      cursor: pointer
+
+      &:not(:first-child)
+        margin-left: 17.6px
+
+      &_active
+        border-style: solid
+        border-width: 2px
+        border-radius: 8px
+        border-color: $color-main
+
+  .Arrow
+    position: absolute
+    cursor: pointer
+
+    path
+      fill: $color-main
+
+    &_previous
+      top: 296px
+      left: -80px
+      transform: translateX(-100%)
+
+    &_next
+      top: 296px
+      right: -80px
+      transform: translateX(100%)
+
+
