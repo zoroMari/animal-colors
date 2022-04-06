@@ -1,2 +1,3 @@
 import './index.sass';
-import './app/createBreedTabs'
+import './app/tabsTemplate';
+import './app/startFunctions';
