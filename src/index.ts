@@ -1,3 +1,4 @@
 import './index.sass';
-import './app/tabsTemplate';
+import './app/tabs';
 import './app/startFunctions';
+import './app/gallery';
