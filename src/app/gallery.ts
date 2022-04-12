@@ -51,7 +51,7 @@ export class Gallery implements IGallery {
     const mainContainer = this._createMainPhotoContainerTemplate();
     const previewContainer = this._createPreviewsPhotoContainerTemplate();
     const previewWrapper = this._createPreviewsWrapperTemplate();
-    
+
     const mainPhotos = images.reduce((acc, curr, index) => {
       return [...acc, this._createMainPhotoTemplate(curr, index)];
     }, []);
@@ -84,7 +84,7 @@ export class Gallery implements IGallery {
 
   private _createPreviewsPhotoContainerTemplate(): HTMLDivElement {
     const photoMainContainer = document.createElement('div');
-    photoMainContainer.className = 'PreviewPhoto';
+    photoMainContainer.className = 'Previews';
 
     return photoMainContainer;
   }
