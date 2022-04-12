@@ -48,33 +48,35 @@ export class Gallery implements IGallery {
   }
 
   private _insertSlideTemplate(images: string[]): void {
+    this._root.append(this._createGalleryTemplate(images));
+  }
+
+  private _createGalleryTemplate(images: string[]): HTMLDivElement {
+    const galleryTemplate = document.createElement('div');
+    galleryTemplate.className = 'Gallery';
+
     const mainContainer = this._createMainPhotoContainerTemplate();
     const previewContainer = this._createPreviewsPhotoContainerTemplate();
     const previewWrapper = this._createPreviewsWrapperTemplate();
 
-    const mainPhotos = images.reduce((acc, curr, index) => {
-      return [...acc, this._createMainPhotoTemplate(curr, index)];
-    }, []);
-
-    const previewPhotos  = images.reduce((acc, curr, index) => {
-      return [...acc, this._createPreviewPhotoTemplate(curr, index)];
-    }, []);
-
-    mainPhotos.forEach((item) => {
-      return mainContainer.append(item);
+    images.forEach((item, index) => {
+      return mainContainer.append(this._createMainPhotoTemplate(item, index));
     });
 
-    previewPhotos.forEach((item) => {
-      return previewWrapper.append(item);
+    images.forEach((item, index) => {
+      return previewWrapper.append(this._createPreviewPhotoTemplate(item, index));
     });
 
     previewContainer.append(previewWrapper);
 
-    this._root.append(mainContainer);
-    this._root.append(previewContainer);
-    this._root.append(this._previousButton);
-    this._root.append(this._nextButton);
+    galleryTemplate.append(mainContainer);
+    galleryTemplate.append(previewContainer);
+    galleryTemplate.append(this._previousButton);
+    galleryTemplate.append(this._nextButton);
+
+    return galleryTemplate;
   }
+
 
   private _createMainPhotoContainerTemplate(): HTMLDivElement {
     const photoMainContainer = document.createElement('div');
@@ -85,7 +87,6 @@ export class Gallery implements IGallery {
   private _createPreviewsPhotoContainerTemplate(): HTMLDivElement {
     const photoMainContainer = document.createElement('div');
     photoMainContainer.className = 'Previews';
-
     return photoMainContainer;
   }
 
@@ -97,8 +98,7 @@ export class Gallery implements IGallery {
 
   private _createMainPhotoTemplate(image: string, id: number): HTMLDivElement {
     const photoMain = document.createElement('div');
-    photoMain.innerHTML = `<img src="${image}" id="${this._randomIdPart}_${id}"/>`
-    // photoMain.className = 'MainPhoto';
+    photoMain.innerHTML = `<img src="${image}" id="${this._randomIdPart}_${id}" />`
     return photoMain;
   }
 
@@ -119,13 +119,15 @@ export class Gallery implements IGallery {
     }, '');
 
     return `
-      <div class="MainPhoto">
-        ${mainPhotos}
-      </div>
+      <div class="Gallery">
+        <div class="MainPhoto">
+          ${mainPhotos}
+        </div>
 
-      <div class="Previews">
-       <div class="Previews-Wrapper">
-          ${previewPhotos}
+        <div class="Previews">
+        <div class="Previews-Wrapper">
+            ${previewPhotos}
+          </div>
         </div>
       </div>
     `;

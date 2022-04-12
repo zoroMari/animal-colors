@@ -47,7 +47,7 @@ export class TabsComponent {
 
   private _insertContent() {
     const breedsTemplate = this._createTabsContainerTemplate();
-    const galleryTemplate = this.__createGalleryContainerTemplate();
+    const galleryTemplate = this.__createTabContentTemplate();
 
     Object.values(this._tabMapping).forEach((item) => {
       return breedsTemplate.append(item.tab);
@@ -63,9 +63,9 @@ export class TabsComponent {
     }, {});
   }
 
-  private __createGalleryContainerTemplate(): HTMLDivElement {
+  private __createTabContentTemplate(): HTMLDivElement {
     const result = document.createElement('div');
-    result.className = 'Gallery';
+    result.className = 'TabContent';
     return result;
   }
 
@@ -101,9 +101,9 @@ export class TabsComponent {
 
 
   private _handleTabOnClick(catId: string) {
-    const root: Element = document.querySelector('.Gallery');
+    const root: Element = document.querySelector('.TabContent');
 
-    // this._openGallery(root, catId);
+    this._openGallery(root, catId);
     this._changeUrlWithoutReload(catId);
   }
 
