@@ -96,7 +96,7 @@ export class TabsComponent {
     params.set(URL_PARAM_NAME, tabId);
 
     url.search = params as unknown as string;
-    window.history.replaceState(null, null, url);
+    window.history.replaceState(null, null, url as unknown as string);
   }
 
 

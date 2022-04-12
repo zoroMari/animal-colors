@@ -5,14 +5,19 @@ interface IGallery {
   prevSlide(): void;
 }
 
+interface ISlide {
+  index: number;
+  slide: HTMLDivElement;
+  thumb: HTMLDivElement;
+}
+
 export class Gallery implements IGallery {
   private readonly _root: Element;
   private readonly _catPhotos: string[];
-  private _currentSlideIndex: number;
-  private _currentSlideId: string;
   private _randomIdPart = Math.random();
-  private _previousButton: HTMLDivElement = this._createPreviousButtonTemplate();
-  private _nextButton: HTMLDivElement = this._createNextButtonTemplate();
+
+  private _slides: Record<number, ISlide> = { };
+  private _currentSlide: ISlide;
 
   constructor(
     _root: Element,
@@ -24,31 +29,37 @@ export class Gallery implements IGallery {
   }
 
   public nextSlide(): void {
-    this._changeSlide(this._currentSlideIndex + 1);
+    this._changeSlide(this._currentSlide?.index + 1);
   }
 
   public prevSlide(): void {
-    this._changeSlide(this._currentSlideIndex - 1);
-  }
-
-  public hideButton(): void {
-    this._previousButton.remove();
-    this._nextButton.remove();
+    this._changeSlide(this._currentSlide?.index - 1);
   }
 
   private _render(): void {
-    this._insertSlideTemplate(this._catPhotos);
+    this._root.append(this._createGalleryTemplate(this._catPhotos));
+    this._changeSlide(0);
+    // this._insertSlideTemplate(this._catPhotos);
   }
 
   private _changeSlide(nextSlideIndex: number): void {
-    const prevSlide = this._root.querySelector(`#${this._currentSlideId}`) as HTMLImageElement;
-    prevSlide.classList.remove('.ActiveSLide');
+    if (this._currentSlide) {
+      this._currentSlide.slide.classList.remove('Gallery-Slide_active');
+      this._currentSlide.thumb.classList.remove('Preview_active');
+    }
 
-    // this.nextSlideIndex
-  }
+    const maxIndex = Object.keys(this._slides).length - 1;
+    let index = nextSlideIndex;
+    if (index < 0) index = maxIndex;
+    else if (index > maxIndex) index = 0;
 
-  private _insertSlideTemplate(images: string[]): void {
-    this._root.append(this._createGalleryTemplate(images));
+    console.log('index >>>', index);
+    console.log('nextSlideIndex >>>', nextSlideIndex);
+    console.log('maxIndex >>>', maxIndex);
+    this._currentSlide = this._slides[index];
+    console.log('this._currentSlide  >>>', this._currentSlide );
+    this._currentSlide.slide.classList.add('Gallery-Slide_active');
+    this._currentSlide.thumb.classList.add('Preview_active');
   }
 
   private _createGalleryTemplate(images: string[]): HTMLDivElement {
@@ -58,21 +69,25 @@ export class Gallery implements IGallery {
     const mainContainer = this._createMainPhotoContainerTemplate();
     const previewContainer = this._createPreviewsPhotoContainerTemplate();
     const previewWrapper = this._createPreviewsWrapperTemplate();
+    const previousButton: HTMLDivElement = this._createPreviousButtonTemplate();
+    const nextButton: HTMLDivElement = this._createNextButtonTemplate();
 
     images.forEach((item, index) => {
-      return mainContainer.append(this._createMainPhotoTemplate(item, index));
-    });
+      const slide = this._createMainPhotoTemplate(item, index);
+      const thumb = this._createPreviewPhotoTemplate(item, index);
 
-    images.forEach((item, index) => {
-      return previewWrapper.append(this._createPreviewPhotoTemplate(item, index));
+      this._slides[index] = { index, slide, thumb };
+
+      mainContainer.append(slide);
+      previewWrapper.append(thumb);
     });
 
     previewContainer.append(previewWrapper);
 
     galleryTemplate.append(mainContainer);
     galleryTemplate.append(previewContainer);
-    galleryTemplate.append(this._previousButton);
-    galleryTemplate.append(this._nextButton);
+    galleryTemplate.append(previousButton);
+    galleryTemplate.append(nextButton);
 
     return galleryTemplate;
   }
@@ -80,7 +95,7 @@ export class Gallery implements IGallery {
 
   private _createMainPhotoContainerTemplate(): HTMLDivElement {
     const photoMainContainer = document.createElement('div');
-    photoMainContainer.className = 'MainPhoto';
+    photoMainContainer.className = 'Gallery-Slides';
     return photoMainContainer;
   }
 
@@ -99,50 +114,16 @@ export class Gallery implements IGallery {
   private _createMainPhotoTemplate(image: string, id: number): HTMLDivElement {
     const photoMain = document.createElement('div');
     photoMain.innerHTML = `<img src="${image}" id="${this._randomIdPart}_${id}" />`
+    photoMain.className = 'Gallery-Slide';
     return photoMain;
   }
 
-  private _createPreviewPhotoTemplate(image: string, id: number): HTMLElement {
+  private _createPreviewPhotoTemplate(image: string, index: number): HTMLDivElement {
     const photoPreview = document.createElement('div');
-    photoPreview.innerHTML = `<img src="${image}" id="${this._randomIdPart}_${id}" />`
+    photoPreview.innerHTML = `<img src="${image}" />`
     photoPreview.className = 'Preview';
+    photoPreview.onclick = () => this._changeSlide(index);
     return photoPreview;
-  }
-
-  private _createSlideTemplate_old(images: string[]): string {
-    const mainPhotos: string = images.reduce((acc, curr, index) => {
-      return `${acc}${this._createMainPhotoTemplate_old(curr, index)}`;
-    }, '');
-
-    const previewPhotos: string = images.reduce((acc, curr, index) => {
-      return `${acc}${this._createPreviewPhotoTemplate_old(curr, index)}`;
-    }, '');
-
-    return `
-      <div class="Gallery">
-        <div class="MainPhoto">
-          ${mainPhotos}
-        </div>
-
-        <div class="Previews">
-        <div class="Previews-Wrapper">
-            ${previewPhotos}
-          </div>
-        </div>
-      </div>
-    `;
-  }
-
-  private _createMainPhotoTemplate_old(image: string, id: number): string {
-    return `
-     <img src="${image}" id="${this._randomIdPart}_${id}"/>
-    `
-  }
-
-  private _createPreviewPhotoTemplate_old(image: string, id: number): string {
-    return `
-      <img class="Preview" src="${image}" id="${this._randomIdPart}_${id}" />
-    `
   }
 
   private _createPreviousButtonTemplate(): HTMLDivElement {
@@ -159,7 +140,7 @@ export class Gallery implements IGallery {
           28.7783 30.9632 28.414 30.586L21.828 24L28.414 17.414Z" fill="#253238"/>
       </svg>`
     prevButton.className = 'Arrow Arrow_previous';
-
+    prevButton.onclick = () => this.prevSlide();
     return prevButton;
   }
 
@@ -178,12 +159,9 @@ export class Gallery implements IGallery {
           17.414Z" fill="#253238"/>
       </svg>`
     nextButton.className = 'Arrow Arrow_next';
-
+    nextButton.onclick = () => this.nextSlide();
     return nextButton;
   }
-
-
-
 }
 
 // export const gallery = new Gallery(document.querySelector('.Gallery'), catsData[0].images);
