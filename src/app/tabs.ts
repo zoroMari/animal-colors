@@ -103,7 +103,7 @@ export class TabsComponent {
   private _handleTabOnClick(catId: string) {
     const root: Element = document.querySelector('.Gallery');
 
-    this._openGallery(root, catId);
+    // this._openGallery(root, catId);
     this._changeUrlWithoutReload(catId);
   }
 
