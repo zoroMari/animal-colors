@@ -46,15 +46,15 @@ export class TabsComponent {
   }
 
   private _insertContent() {
-    const breedsTemplate = this._createTabsContainerTemplate();
-    const galleryTemplate = this.__createGalleryContainerTemplate();
+    const tabsTemplate = this._createTabsContainerTemplate();
+    const tabContent = this._createTabContentTemplate();
 
     Object.values(this._tabMapping).forEach((item) => {
-      return breedsTemplate.append(item.tab);
+      return tabsTemplate.append(item.tab);
     })
 
-    this._root.appendChild(breedsTemplate);
-    this._root.appendChild(galleryTemplate);
+    this._root.appendChild(tabsTemplate);
+    this._root.appendChild(tabContent);
   }
 
   private _createTabsMapping(): ITabsMapping {
@@ -63,9 +63,9 @@ export class TabsComponent {
     }, {});
   }
 
-  private __createGalleryContainerTemplate(): HTMLDivElement {
+  private _createTabContentTemplate(): HTMLDivElement {
     const result = document.createElement('div');
-    result.className = 'Gallery';
+    result.className = 'TabContent';
     return result;
   }
 
@@ -96,12 +96,13 @@ export class TabsComponent {
     params.set(URL_PARAM_NAME, tabId);
 
     url.search = params as unknown as string;
-    window.history.replaceState(null, null, url);
+    window.history.replaceState(null, null, url as unknown as string);
   }
 
 
   private _handleTabOnClick(catId: string) {
-    const root: Element = document.querySelector('.Gallery');
+    const root: Element = document.querySelector('.TabContent');
+    root.innerHTML = null;
 
     this._openGallery(root, catId);
     this._changeUrlWithoutReload(catId);

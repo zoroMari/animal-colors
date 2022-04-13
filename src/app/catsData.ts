@@ -74,6 +74,7 @@ export const catsData: Cat[] = [
       './assets/images/americanShorthair/americanShorthair_05.jpg',
       './assets/images/americanShorthair/americanShorthair_06.jpg',
       './assets/images/americanShorthair/americanShorthair_07.jpg',
+      './assets/images/americanShorthair/americanShorthair_08.jpg',
     ],
   }),
 

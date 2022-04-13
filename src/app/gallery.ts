@@ -5,12 +5,18 @@ interface IGallery {
   prevSlide(): void;
 }
 
+interface ISlide {
+  index: number;
+  slide: HTMLDivElement;
+  thumb: HTMLDivElement;
+}
+
 export class Gallery implements IGallery {
   private readonly _root: Element;
   private readonly _catPhotos: string[];
-  private _currentSlideIndex: number;
-  private _currentSlideId: string;
   private _randomIdPart = Math.random();
+  private _slides: Record<number, ISlide> = { };
+  private _currentSlide: ISlide;
 
   constructor(
     _root: Element,
@@ -22,96 +28,151 @@ export class Gallery implements IGallery {
   }
 
   public nextSlide(): void {
-    this._changeSlide(this._currentSlideIndex + 1);
+    this._changeSlide(this._currentSlide?.index + 1);
   }
 
   public prevSlide(): void {
-    this._changeSlide(this._currentSlideIndex - 1);
+    this._changeSlide(this._currentSlide?.index - 1);
   }
 
   private _render(): void {
-    this._insertSlideTemplate(this._catPhotos);
+    this._root.append(this._createGalleryTemplate(this._catPhotos));
+    this._changeSlide(0);
   }
 
   private _changeSlide(nextSlideIndex: number): void {
-    const prevSlide = this._root.querySelector(`#${this._currentSlideId}`) as HTMLImageElement;
-    prevSlide.classList.remove('.ActiveSLide');
+    if (this._currentSlide) {
+      this._currentSlide.slide.classList.remove('Gallery-Slide_active');
+      this._currentSlide.thumb.classList.remove('Thumb_active');
+    }
 
-    // this.nextSlideIndex
+    const maxIndex = Object.keys(this._slides).length - 1;
+    let index = nextSlideIndex;
+    if (index < 0) index = maxIndex;
+    else if (index > maxIndex) index = 0;
+
+    this._currentSlide = this._slides[index];
+    this._currentSlide.slide.classList.add('Gallery-Slide_active');
+    this._currentSlide.thumb.classList.add('Thumb_active');
+
+    this._changeThumbPosition(index);
   }
 
-  private _insertSlideTemplate(images: string[]): void {
-    const template: string = this._createSlideTemplate(images);
-    this._root.innerHTML = template;
-    this._root.innerHTML += this._createButtonTemplate();
+  private _changeThumbPosition(index: number) {
+
+    const maxIndex: number = Object.keys(this._slides).length - 1;
+    const thumbs: HTMLDivElement = document.querySelector('.Thumbs-Wrapper');
+
+    if (index >= 3 && maxIndex > 6) {
+      thumbs.style.transform = `translateX(${-(92 + 17.5) * (index - 1)}px)`;
+    }
+
+    if (index < 3)  {
+      thumbs.style.transform = '';
+    }
   }
 
-  private _createSlideTemplate(images: string[]): string {
-    const mainPhotos: string = images.reduce((acc, curr, index) => {
-      return `${acc}${this.__createMainPhotoTemplate(curr, index)}`;
-    }, '');
+  private _createGalleryTemplate(images: string[]): HTMLDivElement {
+    const galleryTemplate = document.createElement('div');
+    galleryTemplate.className = 'Gallery';
 
-    const previewPhotos: string = images.reduce((acc, curr, index) => {
-      return `${acc}${this.__createPreviewPhotoTemplate(curr, index)}`;
-    }, '');
+    const mainContainer = this._createMainPhotoContainerTemplate();
+    const thumbContainer = this._createThumbsPhotoContainerTemplate();
+    const thumbWrapper = this._createThumbsWrapperTemplate();
+    const previousButton: HTMLDivElement = this._createPreviousButtonTemplate();
+    const nextButton: HTMLDivElement = this._createNextButtonTemplate();
 
-    return `
-      <div class="MainPhoto">
-        ${mainPhotos}
-      </div>
+    images.forEach((item, index) => {
+      const slide = this._createMainPhotoTemplate(item, index);
+      const thumb = this._createThumbPhotoTemplate(item, index);
 
-      <div class="Previews">
-       <div class="Previews-Wrapper">
-          ${previewPhotos}
-        </div>
-      </div>
-    `;
+      this._slides[index] = { index, slide, thumb };
+
+      mainContainer.append(slide);
+      thumbWrapper.append(thumb);
+    });
+
+    thumbContainer.append(thumbWrapper);
+
+    galleryTemplate.append(mainContainer);
+    galleryTemplate.append(thumbContainer);
+    galleryTemplate.append(previousButton);
+    galleryTemplate.append(nextButton);
+
+    return galleryTemplate;
   }
 
-  private __createMainPhotoTemplate(image: string, id: number): string {
-    return `
-     <img src="${image}" id="${this._randomIdPart}_${id}"/>
-    `
+
+  private _createMainPhotoContainerTemplate(): HTMLDivElement {
+    const photoMainContainer = document.createElement('div');
+    photoMainContainer.className = 'Gallery-Slides';
+    return photoMainContainer;
   }
 
-  private __createPreviewPhotoTemplate(image: string, id: number): string {
-    return `
-      <img class="Preview" src="${image}" id="${this._randomIdPart}_${id}" />
-    `
+  private _createThumbsPhotoContainerTemplate(): HTMLDivElement {
+    const photoMainContainer = document.createElement('div');
+    photoMainContainer.className = 'Thumbs';
+    return photoMainContainer;
   }
 
-  private _createButtonTemplate(): string {
-    return `
-      <svg class="Arrow Arrow_previous" width="48" height="48" viewBox="0 0 48 48" fill="none"
-        xmlns="http://www.w3.org/2000/svg">
-          <path fill-rule="evenodd" clip-rule="evenodd" d="M24 2C36.15 2 46 11.85 46 24C46 36.15 36.15 46
-            24 46C11.85 46 2 36.15 2 24C2 11.85 11.85 2 24 2ZM28.414 17.414C28.7783 17.0368 28.9799
-            16.5316 28.9753 16.0072C28.9708 15.4828 28.7605 14.9812 28.3896 14.6104C28.0188 14.2395
-            27.5172 14.0292 26.9928 14.0247C26.4684 14.0201 25.9632 14.2217 25.586 14.586L17.586
-            22.586C17.2111 22.9611 17.0004 23.4697 17.0004 24C17.0004 24.5303 17.2111 25.0389 17.586
-            25.414L25.586 33.414C25.9632 33.7783 26.4684 33.9799 26.9928 33.9753C27.5172 33.9708 28.0188
-            33.7605 28.3896 33.3896C28.7605 33.0188 28.9708 32.5172 28.9753 31.9928C28.9799 31.4684
-            28.7783 30.9632 28.414 30.586L21.828 24L28.414 17.414Z" fill="#253238"/>
-        </svg>
+  private _createThumbsWrapperTemplate(): HTMLDivElement {
+    const previewsWrapperTemplate = document.createElement('div');
+    previewsWrapperTemplate.className = 'Thumbs-Wrapper';
+    return previewsWrapperTemplate;
+  }
 
-        <svg class="Arrow Arrow_next" width="48" height="48" viewBox="0 0 48 48" fill="none"
-        xmlns="http://www.w3.org/2000/svg">
-          <path fill-rule="evenodd" clip-rule="evenodd" d="M24 2C11.85 2 2 11.85 2 24C2 36.15
-            11.85 46 24 46C36.15 46 46 36.15 46 24C46 11.85 36.15 2 24 2ZM19.586 17.414C19.2217
-            17.0368 19.0201 16.5316 19.0247 16.0072C19.0292 15.4828 19.2395 14.9812 19.6104
-            14.6104C19.9812 14.2395 20.4828 14.0292 21.0072 14.0247C21.5316 14.0201 22.0368
-            14.2217 22.414 14.586L30.414 22.586C30.7889 22.9611 30.9996 23.4697 30.9996 24C30.9996
-            24.5303 30.7889 25.0389 30.414 25.414L22.414 33.414C22.0368 33.7783 21.5316 33.9799
-            21.0072 33.9753C20.4828 33.9708 19.9812 33.7605 19.6104 33.3896C19.2395 33.0188 19.0292
-            32.5172 19.0247 31.9928C19.0201 31.4684 19.2217 30.9632 19.586 30.586L26.172 24L19.586
-            17.414Z" fill="#253238"/>
-        </svg>
-    `;
-    throw new Error('Not implemented');
+  private _createMainPhotoTemplate(image: string, id: number): HTMLDivElement {
+    const photoMain = document.createElement('div');
+    photoMain.innerHTML = `<img src="${image}" id="${this._randomIdPart}_${id}" />`
+    photoMain.className = 'Gallery-Slide';
+    return photoMain;
+  }
+
+  private _createThumbPhotoTemplate(image: string, index: number): HTMLDivElement {
+    const photoPreview = document.createElement('div');
+    photoPreview.innerHTML = `<img src="${image}" />`
+    photoPreview.className = 'Thumb';
+    photoPreview.onclick = () => this._changeSlide(index);
+    return photoPreview;
+  }
+
+  private _createPreviousButtonTemplate(): HTMLDivElement {
+    const prevButton = document.createElement('div');
+    prevButton.innerHTML = `
+      <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path fill-rule="evenodd" clip-rule="evenodd" d="M24 2C36.15 2 46 11.85 46 24C46 36.15 36.15 46
+          24 46C11.85 46 2 36.15 2 24C2 11.85 11.85 2 24 2ZM28.414 17.414C28.7783 17.0368 28.9799
+          16.5316 28.9753 16.0072C28.9708 15.4828 28.7605 14.9812 28.3896 14.6104C28.0188 14.2395
+          27.5172 14.0292 26.9928 14.0247C26.4684 14.0201 25.9632 14.2217 25.586 14.586L17.586
+          22.586C17.2111 22.9611 17.0004 23.4697 17.0004 24C17.0004 24.5303 17.2111 25.0389 17.586
+          25.414L25.586 33.414C25.9632 33.7783 26.4684 33.9799 26.9928 33.9753C27.5172 33.9708 28.0188
+          33.7605 28.3896 33.3896C28.7605 33.0188 28.9708 32.5172 28.9753 31.9928C28.9799 31.4684
+          28.7783 30.9632 28.414 30.586L21.828 24L28.414 17.414Z" fill="#253238"/>
+      </svg>`
+    prevButton.className = 'Arrow Arrow_previous';
+    prevButton.onclick = () => this.prevSlide();
+    return prevButton;
+  }
+
+  private _createNextButtonTemplate(): HTMLDivElement {
+    const nextButton = document.createElement('div');
+    nextButton.innerHTML = `
+      <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path fill-rule="evenodd" clip-rule="evenodd" d="M24 2C11.85 2 2 11.85 2 24C2 36.15
+          11.85 46 24 46C36.15 46 46 36.15 46 24C46 11.85 36.15 2 24 2ZM19.586 17.414C19.2217
+          17.0368 19.0201 16.5316 19.0247 16.0072C19.0292 15.4828 19.2395 14.9812 19.6104
+          14.6104C19.9812 14.2395 20.4828 14.0292 21.0072 14.0247C21.5316 14.0201 22.0368
+          14.2217 22.414 14.586L30.414 22.586C30.7889 22.9611 30.9996 23.4697 30.9996 24C30.9996
+          24.5303 30.7889 25.0389 30.414 25.414L22.414 33.414C22.0368 33.7783 21.5316 33.9799
+          21.0072 33.9753C20.4828 33.9708 19.9812 33.7605 19.6104 33.3896C19.2395 33.0188 19.0292
+          32.5172 19.0247 31.9928C19.0201 31.4684 19.2217 30.9632 19.586 30.586L26.172 24L19.586
+          17.414Z" fill="#253238"/>
+      </svg>`
+    nextButton.className = 'Arrow Arrow_next';
+    nextButton.onclick = () => this.nextSlide();
+    return nextButton;
   }
 }
-
-
 
 // export const gallery = new Gallery(document.querySelector('.Gallery'), catsData[0].images);
 
