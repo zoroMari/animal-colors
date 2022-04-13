@@ -54,6 +54,22 @@ export class Gallery implements IGallery {
     this._currentSlide = this._slides[index];
     this._currentSlide.slide.classList.add('Gallery-Slide_active');
     this._currentSlide.thumb.classList.add('Thumb_active');
+
+    this._changeThumbPosition(index);
+  }
+
+  private _changeThumbPosition(index: number) {
+
+    const maxIndex: number = Object.keys(this._slides).length - 1;
+    const thumbs: HTMLDivElement = document.querySelector('.Thumbs-Wrapper');
+
+    if (index >= 3 && maxIndex > 6) {
+      thumbs.style.transform = `translateX(${-(92 + 17.5) * (index - 1)}px)`;
+    }
+
+    if (index < 3)  {
+      thumbs.style.transform = '';
+    }
   }
 
   private _createGalleryTemplate(images: string[]): HTMLDivElement {
