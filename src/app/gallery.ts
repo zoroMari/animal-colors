@@ -15,7 +15,6 @@ export class Gallery implements IGallery {
   private readonly _root: Element;
   private readonly _catPhotos: string[];
   private _randomIdPart = Math.random();
-
   private _slides: Record<number, ISlide> = { };
   private _currentSlide: ISlide;
 
@@ -39,13 +38,12 @@ export class Gallery implements IGallery {
   private _render(): void {
     this._root.append(this._createGalleryTemplate(this._catPhotos));
     this._changeSlide(0);
-    // this._insertSlideTemplate(this._catPhotos);
   }
 
   private _changeSlide(nextSlideIndex: number): void {
     if (this._currentSlide) {
       this._currentSlide.slide.classList.remove('Gallery-Slide_active');
-      this._currentSlide.thumb.classList.remove('Preview_active');
+      this._currentSlide.thumb.classList.remove('Thumb_active');
     }
 
     const maxIndex = Object.keys(this._slides).length - 1;
@@ -53,13 +51,9 @@ export class Gallery implements IGallery {
     if (index < 0) index = maxIndex;
     else if (index > maxIndex) index = 0;
 
-    console.log('index >>>', index);
-    console.log('nextSlideIndex >>>', nextSlideIndex);
-    console.log('maxIndex >>>', maxIndex);
     this._currentSlide = this._slides[index];
-    console.log('this._currentSlide  >>>', this._currentSlide );
     this._currentSlide.slide.classList.add('Gallery-Slide_active');
-    this._currentSlide.thumb.classList.add('Preview_active');
+    this._currentSlide.thumb.classList.add('Thumb_active');
   }
 
   private _createGalleryTemplate(images: string[]): HTMLDivElement {
@@ -67,25 +61,25 @@ export class Gallery implements IGallery {
     galleryTemplate.className = 'Gallery';
 
     const mainContainer = this._createMainPhotoContainerTemplate();
-    const previewContainer = this._createPreviewsPhotoContainerTemplate();
-    const previewWrapper = this._createPreviewsWrapperTemplate();
+    const thumbContainer = this._createThumbsPhotoContainerTemplate();
+    const thumbWrapper = this._createThumbsWrapperTemplate();
     const previousButton: HTMLDivElement = this._createPreviousButtonTemplate();
     const nextButton: HTMLDivElement = this._createNextButtonTemplate();
 
     images.forEach((item, index) => {
       const slide = this._createMainPhotoTemplate(item, index);
-      const thumb = this._createPreviewPhotoTemplate(item, index);
+      const thumb = this._createThumbPhotoTemplate(item, index);
 
       this._slides[index] = { index, slide, thumb };
 
       mainContainer.append(slide);
-      previewWrapper.append(thumb);
+      thumbWrapper.append(thumb);
     });
 
-    previewContainer.append(previewWrapper);
+    thumbContainer.append(thumbWrapper);
 
     galleryTemplate.append(mainContainer);
-    galleryTemplate.append(previewContainer);
+    galleryTemplate.append(thumbContainer);
     galleryTemplate.append(previousButton);
     galleryTemplate.append(nextButton);
 
@@ -99,15 +93,15 @@ export class Gallery implements IGallery {
     return photoMainContainer;
   }
 
-  private _createPreviewsPhotoContainerTemplate(): HTMLDivElement {
+  private _createThumbsPhotoContainerTemplate(): HTMLDivElement {
     const photoMainContainer = document.createElement('div');
-    photoMainContainer.className = 'Previews';
+    photoMainContainer.className = 'Thumbs';
     return photoMainContainer;
   }
 
-  private _createPreviewsWrapperTemplate(): HTMLDivElement {
+  private _createThumbsWrapperTemplate(): HTMLDivElement {
     const previewsWrapperTemplate = document.createElement('div');
-    previewsWrapperTemplate.className = 'Previews-Wrapper';
+    previewsWrapperTemplate.className = 'Thumbs-Wrapper';
     return previewsWrapperTemplate;
   }
 
@@ -118,10 +112,10 @@ export class Gallery implements IGallery {
     return photoMain;
   }
 
-  private _createPreviewPhotoTemplate(image: string, index: number): HTMLDivElement {
+  private _createThumbPhotoTemplate(image: string, index: number): HTMLDivElement {
     const photoPreview = document.createElement('div');
     photoPreview.innerHTML = `<img src="${image}" />`
-    photoPreview.className = 'Preview';
+    photoPreview.className = 'Thumb';
     photoPreview.onclick = () => this._changeSlide(index);
     return photoPreview;
   }

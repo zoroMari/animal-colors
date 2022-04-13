@@ -125,7 +125,6 @@ a, h1, h2, h3, h4, h5, h6, p
     position: relative
     display: flex
     flex-direction: column
-    align-items: center
     margin-top: 32px
     width: 640px
 
@@ -152,33 +151,34 @@ a, h1, h2, h3, h4, h5, h6, p
         z-index: 111;
         opacity: 1;
 
-    .Previews
-      position: relative
+    .Thumbs
       max-width: 100%
       margin-top: 32px
       overflow-x: hidden
 
-      .Previews-Wrapper
+      .Thumbs-Wrapper
         display: flex
-        // flex-wrap: wrap
         width: 100%
 
-      .Preview
-        width: 92px
-        height: 92px
-        cursor: pointer
-        border: 2px solid transparent
-        border-radius: 8px
+        .Thumb
+          flex-shrink: 0
+          width: 92px
+          height: 92px
+          cursor: pointer
+          border: 3px solid transparent
+          border-radius: 8px
+          overflow-x: hidden
+          overflow-y: hidden
 
-        img
-          width: 100%
-          height: 100%
+          img
+            width: 100%
+            height: 100%
 
-        &:not(:first-child)
-            margin-left: 17.6px
+          &:not(:first-child)
+              margin-left: 17.6px
 
-        &_active
-          border-color: $color-main
+          &_active
+            border-color: $color-main
 
     .Arrow
       position: absolute
