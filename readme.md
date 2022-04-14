@@ -1,5 +1,8 @@
 # Cat colors
 
+Preview by [THIS LINK](https://zoromari.github.io/cat-colors/?activeTab=bengal)
+<br> 
+
 In this project I using: 
 - TypeScript 
 - SASS 
