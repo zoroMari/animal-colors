@@ -40,7 +40,7 @@ export class Gallery implements IGallery {
     this._changeSlide(0);
   }
 
-  private _changeSlide(nextSlideIndex: number, event?: any): void {
+  private _changeSlide(nextSlideIndex: number): void {
     if (this._currentSlide) {
       this._currentSlide.slide.classList.remove('Gallery-Slide_active');
       this._currentSlide.thumb.classList.remove('Thumb_active');
