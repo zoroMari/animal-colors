@@ -55,16 +55,19 @@ export class Gallery implements IGallery {
     this._currentSlide.slide.classList.add('Gallery-Slide_active');
     this._currentSlide.thumb.classList.add('Thumb_active');
 
-    this._changeThumbPosition(index);
+    setTimeout(() => this._changeThumbPosition(index), 40)
+    // this._changeThumbPosition(index);
   }
 
   private _changeThumbPosition(index: number) {
 
     const maxIndex: number = Object.keys(this._slides).length - 1;
     const thumbs: HTMLDivElement = document.querySelector('.Thumbs-Wrapper');
+    const thumbWidth: number = document.querySelector<HTMLDivElement>('.Thumb').offsetWidth;
+    const margin = 17.5;
 
     if (index >= 3 && maxIndex > 6) {
-      thumbs.style.transform = `translateX(${-(92 + 17.5) * (index - 1)}px)`;
+      thumbs.style.transform = `translateX(${-(thumbWidth + margin) * (index - 1)}px)`;
     }
 
     if (index < 3)  {
@@ -101,7 +104,6 @@ export class Gallery implements IGallery {
 
     return galleryTemplate;
   }
-
 
   private _createMainPhotoContainerTemplate(): HTMLDivElement {
     const photoMainContainer = document.createElement('div');
