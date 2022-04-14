@@ -14,7 +14,7 @@ interface ISlide {
 export class Gallery implements IGallery {
   private readonly _root: Element;
   private readonly _catPhotos: string[];
-  private _randomIdPart = Math.random();
+  private readonly _optionsCount = 5;
   private _slides: Record<number, ISlide> = { };
   private _currentSlide: ISlide;
 
@@ -58,32 +58,35 @@ export class Gallery implements IGallery {
     this._changeThumbPosition(index);
   }
 
-  private _changeThumbPosition(index: number) {
-
-    const maxIndex: number = Object.keys(this._slides).length - 1;
+  private _changeThumbPosition(currentIndex: number) {
     const thumbs: HTMLDivElement = document.querySelector('.Thumbs-Wrapper');
 
-    if (index >= 3 && maxIndex > 6) {
-      thumbs.style.transform = `translateX(${-(92 + 17.5) * (index - 1)}px)`;
-    }
+    const middle = Math.floor(this._optionsCount / 2);
+    const length = Object.keys(this._slides).length;
+    const thumbWidth = this._currentSlide.thumb.offsetWidth;
+    const margin = Number.parseFloat(getComputedStyle(this._currentSlide.thumb).marginLeft);
 
-    if (index < 3)  {
-      thumbs.style.transform = '';
-    }
+    let index = currentIndex - middle;
+
+    if (length - currentIndex < this._optionsCount - middle) index = length - this._optionsCount;
+
+    if (currentIndex < this._optionsCount - middle) index = 0;
+
+    thumbs.style.transform = `translateX(-${(index) * (thumbWidth + margin)}px)`;
   }
 
   private _createGalleryTemplate(images: string[]): HTMLDivElement {
     const galleryTemplate = document.createElement('div');
     galleryTemplate.className = 'Gallery';
 
-    const mainContainer = this._createMainPhotoContainerTemplate();
+    const mainContainer = this._createSlidesContainerTemplate();
     const thumbContainer = this._createThumbsPhotoContainerTemplate();
     const thumbWrapper = this._createThumbsWrapperTemplate();
     const previousButton: HTMLDivElement = this._createPreviousButtonTemplate();
     const nextButton: HTMLDivElement = this._createNextButtonTemplate();
 
     images.forEach((item, index) => {
-      const slide = this._createMainPhotoTemplate(item, index);
+      const slide = this._createSlideTemplate(item, index);
       const thumb = this._createThumbPhotoTemplate(item, index);
 
       this._slides[index] = { index, slide, thumb };
@@ -102,38 +105,37 @@ export class Gallery implements IGallery {
     return galleryTemplate;
   }
 
+  private _createSlidesContainerTemplate(): HTMLDivElement {
+    const slidesContainer = document.createElement('div');
+    slidesContainer.className = 'Gallery-Slides';
+    return slidesContainer;
+  }
 
-  private _createMainPhotoContainerTemplate(): HTMLDivElement {
-    const photoMainContainer = document.createElement('div');
-    photoMainContainer.className = 'Gallery-Slides';
-    return photoMainContainer;
+  private _createSlideTemplate(image: string, id: number): HTMLDivElement {
+    const slide = document.createElement('div');
+    slide.innerHTML = `<img src="${image}"/>`
+    slide.className = 'Gallery-Slide';
+    return slide;
   }
 
   private _createThumbsPhotoContainerTemplate(): HTMLDivElement {
-    const photoMainContainer = document.createElement('div');
-    photoMainContainer.className = 'Thumbs';
-    return photoMainContainer;
+    const thumbsContainer = document.createElement('div');
+    thumbsContainer.className = 'Thumbs';
+    return thumbsContainer;
   }
 
   private _createThumbsWrapperTemplate(): HTMLDivElement {
-    const previewsWrapperTemplate = document.createElement('div');
-    previewsWrapperTemplate.className = 'Thumbs-Wrapper';
-    return previewsWrapperTemplate;
-  }
-
-  private _createMainPhotoTemplate(image: string, id: number): HTMLDivElement {
-    const photoMain = document.createElement('div');
-    photoMain.innerHTML = `<img src="${image}" id="${this._randomIdPart}_${id}" />`
-    photoMain.className = 'Gallery-Slide';
-    return photoMain;
+    const thumbsWrapperTemplate = document.createElement('div');
+    thumbsWrapperTemplate.className = 'Thumbs-Wrapper';
+    return thumbsWrapperTemplate;
   }
 
   private _createThumbPhotoTemplate(image: string, index: number): HTMLDivElement {
-    const photoPreview = document.createElement('div');
-    photoPreview.innerHTML = `<img src="${image}" />`
-    photoPreview.className = 'Thumb';
-    photoPreview.onclick = () => this._changeSlide(index);
-    return photoPreview;
+    const thumb = document.createElement('div');
+    thumb.innerHTML = `<img src="${image}"/>`
+    thumb.className = 'Thumb';
+    thumb.onclick = () => this._changeSlide(index);
+    return thumb;
   }
 
   private _createPreviousButtonTemplate(): HTMLDivElement {
@@ -173,9 +175,3 @@ export class Gallery implements IGallery {
     return nextButton;
   }
 }
-
-// export const gallery = new Gallery(document.querySelector('.Gallery'), catsData[0].images);
-
-// const myCustomButton = document.querySelector('#myBtn');
-
-// myCustomButton.addEventListener('click', () => gallery.nextSlide());
