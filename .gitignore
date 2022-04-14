@@ -1,0 +1,9 @@
+# compiled output
+
+# dependencies
+node_modules
+
+# env
+.env
+
+.DS_Store
