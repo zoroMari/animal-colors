@@ -15,6 +15,8 @@ $font-lable: 12px/15px $font-family
 $font-button: 16px/20px $font-family
 $font-tabs: 24px/29px $font-family
 
+$screen-medium: 1024px
+
 
 html, body
   margin: 0
@@ -103,7 +105,9 @@ a, h1, h2, h3, h4, h5, h6, p
   .Tabs
     display: flex
     flex-wrap: wrap
+    justify-content: center
     align-items: center
+    margin: 0px 24px
 
     .Tab
       font: $font-button
@@ -118,7 +122,10 @@ a, h1, h2, h3, h4, h5, h6, p
         margin-right: 16px
 
       &_active
-        border-color: $color-main;
+        border-color: $color-main
+
+      @media screen and (max-width: $screen-medium)
+        margin-bottom: 16px
 
 
   .Gallery
@@ -128,6 +135,10 @@ a, h1, h2, h3, h4, h5, h6, p
     margin-top: 32px
     width: 640px
 
+    @media screen and (max-width: $screen-medium)
+      width: 480px
+      margin-top: 16px
+
     &-Slides
       position: relative
       top: 0px
@@ -136,20 +147,26 @@ a, h1, h2, h3, h4, h5, h6, p
       height: 640px
       max-width: 100%
 
+      @media screen and (max-width: $screen-medium)
+        width: 480px
+        height: 480px
+
     &-Slide
       position: absolute
       width: 100%
       height: 100%
-      z-index: 0;
-      opacity: 0;
+      z-index: 0
+      opacity: 0
       transition: all 500ms
 
       img
         border-radius: 16px
+        width: 100%
+        height: 100%
 
       &_active
-        z-index: 111;
-        opacity: 1;
+        z-index: 111
+        opacity: 1
 
     .Thumbs
       max-width: 100%
@@ -185,18 +202,21 @@ a, h1, h2, h3, h4, h5, h6, p
     .Arrow
       position: absolute
       cursor: pointer
+      top: 296px
 
       path
         fill: $color-main
 
       &_previous
-        top: 296px
         left: -80px
         transform: translateX(-100%)
 
       &_next
-        top: 296px
         right: -80px
         transform: translateX(100%)
+
+      @media screen and (max-width: $screen-medium)
+        display: none
+
 
 
