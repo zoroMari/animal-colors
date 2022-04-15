@@ -17,7 +17,7 @@ I also practise with such tools:
 
 During working with this project I implemented such features:  
 
-:heavy_check_mark: create html elements dynamicaly in runtime by using js 
+:heavy_check_mark: create html elements dynamicaly in runtime by using ts 
 
 :heavy_check_mark: create logic for gallery with slides and thumbs
 
